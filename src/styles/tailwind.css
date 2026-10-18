@@ -1,0 +1,147 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #FAF8F4;
+  --foreground: #1A1A2E;
+  --primary: #2D3A8C;
+  --primary-foreground: #FAF8F4;
+  --secondary: #F0EDE6;
+  --secondary-foreground: #2D3A8C;
+  --accent: #B8860B;
+  --accent-foreground: #FAF8F4;
+  --muted: #EDE9E0;
+  --muted-foreground: #6B6560;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A2E;
+  --border: #DDD9D0;
+  --input: #EDE9E0;
+  --ring: #2D3A8C;
+  --radius: 0.5rem;
+  --font-sans: var(--font-plus-jakarta-sans), sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), monospace;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    border-color: var(--border);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  h1, h2, h3, h4, h5, h6, p {
+    margin: 0;
+  }
+}
+
+@layer utilities {
+  .font-mono-nums {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  .verse-text {
+    font-size: 1rem;
+    line-height: 1.9;
+    color: var(--foreground);
+  }
+  .verse-number {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--accent);
+    vertical-align: super;
+    margin-right: 0.2rem;
+    letter-spacing: 0.03em;
+  }
+  .strongs-badge {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .parchment-bg {
+    background-color: var(--background);
+  }
+  .hebrew-text {
+    direction: rtl;
+    font-size: 1.1rem;
+    line-height: 2;
+    letter-spacing: 0.02em;
+  }
+  .greek-text {
+    font-size: 1rem;
+    line-height: 1.9;
+    letter-spacing: 0.01em;
+  }
+  .nav-link-active {
+    color: var(--primary);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 2px;
+  }
+  .fade-in {
+    animation: fadeIn 0.2s ease-in-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .slide-up {
+    animation: slideUp 0.25s ease-out;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .text-hero-xl {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+  }
+  .text-hero-sm {
+    font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+  }
+  .gradient-primary {
+    background: linear-gradient(135deg, #2D3A8C 0%, #1E2766 100%);
+  }
+  .gradient-accent {
+    background: linear-gradient(135deg, #B8860B 0%, #8B6508 100%);
+  }
+  .card-hover {
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .card-hover:hover {
+    box-shadow: 0 8px 24px rgba(45, 58, 140, 0.12);
+    transform: translateY(-2px);
+  }
+  .result-highlight {
+    background-color: rgba(184, 134, 11, 0.15);
+    border-radius: 2px;
+    padding: 0 2px;
+  }
+  .diff-highlight {
+    background-color: rgba(184, 134, 11, 0.2);
+    border-radius: 3px;
+    padding: 1px 3px;
+    font-weight: 500;
+  }
+}
