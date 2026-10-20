@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { BIBLE_BOOKS, CROSS_REFERENCES, type TranslationKey } from '@/lib/bibleData';
 import { getOrGenerateChapter, type CachedVerse } from '@/lib/bibleOfflineCache';
 import BookSidebar from './BookSidebar';
@@ -27,13 +28,36 @@ function useMinWidth(minWidth: number): boolean {
 }
 
 export default function BibleReaderClient() {
+  const searchParams = useSearchParams();
   const isTablet = useMinWidth(768);   // md — show sidebar
   const isDesktop = useMinWidth(1024); // lg — show cross-ref panel
 
-  const [selectedBook, setSelectedBook] = useState('joh');
-  const [selectedChapter, setSelectedChapter] = useState(3);
-  const [translation, setTranslation] = useState<TranslationKey>('KJV');
-  const [selectedVerse, setSelectedVerse] = useState<number | null>(16);
+  // Read initial values from URL query params; fall back to John 3:16.
+  const initBook = useMemo(() => {
+    const b = searchParams.get('book');
+    return b && BIBLE_BOOKS.some((bk) => bk.id === b) ? b : 'joh';
+  }, [searchParams]);
+
+  const initChapter = useMemo(() => {
+    const c = parseInt(searchParams.get('chapter') || '', 10);
+    return Number.isFinite(c) && c >= 1 ? c : (initBook === 'joh' ? 3 : 1);
+  }, [searchParams, initBook]);
+
+  const initVerse = useMemo(() => {
+    const v = parseInt(searchParams.get('verse') || '', 10);
+    return Number.isFinite(v) && v >= 1 ? v : (initBook === 'joh' ? 16 : null);
+  }, [searchParams, initBook]);
+
+  const initTranslation = useMemo(() => {
+    const t = searchParams.get('translation') as TranslationKey | null;
+    const valid: TranslationKey[] = ['KJV', 'NIV', 'Hebrew', 'Greek', 'GNV', 'RSV'];
+    return t && valid.includes(t) ? t : 'KJV';
+  }, [searchParams]);
+
+  const [selectedBook, setSelectedBook] = useState(initBook);
+  const [selectedChapter, setSelectedChapter] = useState(initChapter);
+  const [translation, setTranslation] = useState<TranslationKey>(initTranslation);
+  const [selectedVerse, setSelectedVerse] = useState<number | null>(initVerse);
   const [verses, setVerses] = useState<CachedVerse[]>([]);
 
   // Sidebar and cross-ref panel: default open only when the screen is wide enough,
@@ -61,6 +85,23 @@ export default function BibleReaderClient() {
     });
     return () => cancelAnimationFrame(id);
   }, [selectedBook, selectedChapter, translation]);
+
+  // When the URL changes (e.g. cross-reference link or browser back/forward),
+  // sync the reader state to the new params.
+  useEffect(() => {
+    const b = searchParams.get('book');
+    const c = parseInt(searchParams.get('chapter') || '', 10);
+    const v = parseInt(searchParams.get('verse') || '', 10);
+    const t = searchParams.get('translation') as TranslationKey | null;
+
+    if (b && BIBLE_BOOKS.some((bk) => bk.id === b)) setSelectedBook(b);
+    if (Number.isFinite(c) && c >= 1) setSelectedChapter(c);
+    setSelectedVerse(Number.isFinite(v) && v >= 1 ? v : null);
+
+    const valid: TranslationKey[] = ['KJV', 'NIV', 'Hebrew', 'Greek', 'GNV', 'RSV'];
+    if (t && valid.includes(t)) setTranslation(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const goToPrevChapter = useCallback(() => {
     if (selectedChapter > 1) {
